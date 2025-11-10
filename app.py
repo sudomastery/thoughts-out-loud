@@ -145,4 +145,7 @@ def init_db():
 if __name__ == '__main__':
     if not os.path.exists('instance/twitter_clone.db'):
         init_db()
-    app.run(debug=True)
+    # Debug mode should only be used in development, not in production
+    # Set the environment variable FLASK_ENV=development to enable debug mode
+    debug_mode = os.environ.get('FLASK_ENV') == 'development'
+    app.run(debug=debug_mode)
