@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}@{{ user.username }} - Thoughts Out Loud{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>@{{ user.username }}</h2>
+    <p style="color: #8b98a5;">Member since {{ user.created_at.strftime('%B %Y') }}</p>
+    <p style="margin-top: 10px;">Total tweets: {{ tweets|length }}</p>
+</div>
+
+<div class="card">
+    <h3>Tweets</h3>
+    {% if tweets %}
+        {% for tweet in tweets %}
+            <div class="tweet">
+                <div class="tweet-header">
+                    <div class="tweet-author">
+                        <a href="{{ url_for('profile', username=tweet.author.username) }}">@{{ tweet.author.username }}</a>
+                    </div>
+                    <div class="tweet-time">{{ tweet.created_at.strftime('%B %d, %Y at %I:%M %p') }}</div>
+                </div>
+                <div class="tweet-content">{{ tweet.content }}</div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: #8b98a5; text-align: center; padding: 20px;">No tweets yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
