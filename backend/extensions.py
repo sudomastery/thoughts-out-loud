@@ -1,0 +1,8 @@
+# backend/extensions.py
+
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
+# Initialize database and migration objects
+db = SQLAlchemy()
+migrate = Migrate()
