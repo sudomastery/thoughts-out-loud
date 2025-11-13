@@ -5,6 +5,9 @@ from flask_migrate import Migrate
 from extensions import db, migrate
 from routes.posts import posts_bp
 from config import Config
+from models.user import User  
+from models.post import Post  
+
 
 app = Flask(__name__)
 app.config.from_object(Config)
