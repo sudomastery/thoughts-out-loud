@@ -10,7 +10,7 @@ from models.post import Post
 from routes.auth import auth_bp
 from routes.users import users_bp
 
-
+from routes.profile import profile_bp
 
 
 app = Flask(__name__)
@@ -24,10 +24,15 @@ migrate.init_app(app, db)
 app.register_blueprint(posts_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(users_bp)
+app.register_blueprint(profile_bp)
 
 @app.route("/")
 def home():
     return jsonify({"message": "Thoughts Out Loud API is running!"})
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    with app.app_context():
+        print("Available routes:")
+        for rule in app.url_map.iter_rules():
+            print(f"{rule.endpoint}: {rule.rule} - {list(rule.methods)}")
     app.run(debug=True)
