@@ -5,6 +5,13 @@ from flask_migrate import Migrate
 from extensions import db, migrate
 from routes.posts import posts_bp
 from config import Config
+from models.user import User  
+from models.post import Post  
+from routes.auth import auth_bp
+from routes.users import users_bp
+
+
+
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -15,6 +22,8 @@ migrate.init_app(app, db)
 
 # Register your routes
 app.register_blueprint(posts_bp)
+app.register_blueprint(auth_bp)
+app.register_blueprint(users_bp)
 
 @app.route("/")
 def home():
