@@ -36,8 +36,7 @@ function SignUpPage() {
               </div>
               <TextInput
                 id="username"
-                type="text"
-                placeholder="yourname"
+                type="text"                
                 required
                 sizing="lg"
                 shadow
@@ -55,8 +54,7 @@ function SignUpPage() {
               </div>
               <TextInput
                 id="email2"
-                type="email"
-                placeholder="you@example.com"
+                type="email"                
                 required
                 sizing="lg"
                 shadow

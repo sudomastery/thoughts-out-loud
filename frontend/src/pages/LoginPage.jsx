@@ -1,6 +1,20 @@
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
+import { useAuthStore } from '../store/authStore.js';
+import { useNavigate, Link } from 'react-router-dom';
 
 function LoginPage() {
+ //create a fake token
+  const navigate = useNavigate();
+  const login = useAuthStore(s => s.login);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    login({ token: "dev-token", user: { id: 1, username: "you" } });
+    navigate("/feed", { replace: true });
+  }
+
+
+
   return (
     <div className="inset-0 min-h-screen w-full flex items-start justify-center bg-transparent px-4 pt-[20px]">
       <div className="w-full max-w-sm md:max-w-md lg:max-w-md xl:max-w-md">
@@ -27,7 +41,7 @@ function LoginPage() {
               mixBlendMode: "overlay",
             }}
           />
-          <form className="space-y-5 text-left">
+          <form className="space-y-5 text-left" onSubmit={handleSubmit}>
             <div>
               <div className="mb-2 block text-left">
                 <Label htmlFor="email1" className="text-left font-semibold text-gray-700 dark:text-gray-200">
@@ -86,9 +100,9 @@ function LoginPage() {
 
         <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-300">
           Don’t have an account?{' '}
-          <a href="#" className="font-medium text-blue-600 hover:underline dark:text-blue-400">
+          <Link to="/signup" className="font-medium text-blue-600 hover:underline dark:text-blue-400">
             Create one
-          </a>
+          </Link>
         </p>
       </div>
     </div>
