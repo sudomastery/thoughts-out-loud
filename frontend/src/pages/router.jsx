@@ -5,6 +5,7 @@ import SignUpPage from './SignupPage.jsx';
 import FeedPage from './FeedPage.jsx';
 import ProfilePage from './ProfilePage.jsx';
 import HashtagPage from './HashtagPage.jsx';
+import PostDetailPage from './PostDetailPage.jsx';
 import { useAuthStore } from '../store/authStore.js';
 
 // ProtectedRoute enforces auth by checking for a token.
@@ -41,6 +42,14 @@ export default function AppRouter() {
         element={
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/u/:username/status/:id"
+        element={
+          <ProtectedRoute>
+            <PostDetailPage />
           </ProtectedRoute>
         }
       />

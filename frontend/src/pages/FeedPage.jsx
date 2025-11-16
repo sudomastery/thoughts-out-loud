@@ -10,10 +10,12 @@ const initialPosts = [
   {
     id: "1",
     user: { username: "test" },
-    body: "This is my first post: #welcome #thoughts",
+    body: "Making this post to test the lenght of this card and the recurseive nature of this card, how well does it appear how well does it read I mean does it even read  at all testing this to make user it works what elements are missing from the posts #welcome #thoughts",
     createdAt: new Date().toISOString(),
     liked: false,
     likesCount: 2,
+    repliesCount: 82,
+    repostsCount: 75,
   },
   {
     id: "2",
@@ -72,12 +74,16 @@ export default function FeedPage() {
     );
   };
 
+  const handleDelete = (post) => {
+    setPosts((p) => p.filter((it) => it.id !== post.id));
+  };
+
   return (
     <div className="min-h-screen w-full px-4 py-6">
       <div className="mx-auto w-full max-w-2xl space-y-4">
         <NewPostForm onSubmit={handleCreate} />
         {posts.map((post) => (
-          <PostCard key={post.id} post={post} onLike={handleLike} />
+          <PostCard key={post.id} post={post} onLike={handleLike} onDelete={handleDelete} />
         ))}
       </div>
     </div>

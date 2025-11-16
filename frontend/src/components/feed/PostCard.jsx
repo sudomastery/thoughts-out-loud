@@ -1,5 +1,8 @@
 // frontend/src/components/feed/PostCard.jsx
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useAuthStore } from "../../store/authStore.js";
+import PostActions from "./PostActions.jsx";
 
 function formatTime(iso) {
   const d = new Date(iso);
@@ -38,9 +41,26 @@ function BodyWithHashtags({ text }) {
   );
 }
 
-export default function PostCard({ post, onLike }) {
+export default function PostCard({ post, onLike, onEdit, onDelete }) {
+  const navigate = useNavigate();
+  const currentUser = useAuthStore((s) => s.user);
+  const isOwner = currentUser?.username && currentUser.username === post.user.username;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onDocClick = (e) => {
+      if (!menuRef.current) return;
+      if (!menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onDocClick, true);
+    return () => document.removeEventListener('mousedown', onDocClick, true);
+  }, [menuOpen]);
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl p-5">
+  <div className="relative overflow-visible rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl p-5">
       <div
         aria-hidden
         className="absolute inset-0 pointer-events-none rounded-2xl"
@@ -58,7 +78,8 @@ export default function PostCard({ post, onLike }) {
           </span>
         </div>
         <div className="flex-1">
-          <div className="flex items-center gap-2">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center gap-2">
             <Link
               to={`/u/${post.user.username}`}
               className="font-semibold text-gray-900 dark:text-gray-100 hover:underline"
@@ -68,50 +89,65 @@ export default function PostCard({ post, onLike }) {
             <span className="text-xs text-gray-500 dark:text-gray-400">
               {formatTime(post.createdAt)}
             </span>
+            </div>
+            {isOwner && (
+              <div className="relative" ref={menuRef}>
+                <button
+                  type="button"
+                  aria-label="Post options"
+                  title="Post options"
+                  className="h-8 w-8 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-200 hover:text-white hover:bg-gray-700/50 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/30"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMenuOpen((v) => !v);
+                  }}
+                >
+                  <span aria-hidden className="text-xl leading-none">⋮</span>
+                </button>
+                {menuOpen && (
+                  <div
+                    role="menu"
+                    className="absolute right-0 mt-2 z-50 min-w-28 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-xl p-1"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className="w-full text-left px-3 py-2 rounded-md text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setMenuOpen(false);
+                        onDelete?.(post);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           <div className="mt-2">
             <BodyWithHashtags text={post.body} />
           </div>
-          <div className="mt-3 flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => onLike?.(post)}
-              className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 transition 
-                ${post.liked 
-                  ? 'border-gray-300 bg-gray-100 text-gray-900 dark:border-gray-600 dark:bg-gray-900/80 dark:text-white' 
-                  : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900/60 dark:text-gray-300 dark:hover:bg-gray-900'}`}
-              aria-pressed={post.liked}
-              aria-label={post.liked ? 'Unlike' : 'Like'}
-              title={post.liked ? 'Unlike' : 'Like'}
-            >
-              {post.liked ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-5 w-5 text-white"
-                  aria-hidden="true"
-                >
-                  <path fillRule="evenodd" d="M2.25 9A.75.75 0 013 8.25h4.5A.75.75 0 018.25 9v12a.75.75 0 01-.75.75H3a.75.75 0 01-.75-.75V9zm6.75 12h7.5a3 3 0 002.829-1.977l1.5-4.5A3 3 0 0018.96 11.25H14.5a1 1 0 01-.965-.741l-.964-3.857-.008-.036a1 1 0 00-1.953.18L9 12v9z" clipRule="evenodd" />
-                </svg>
-              ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  className="h-5 w-5 text-gray-500 dark:text-gray-400"
-                  aria-hidden="true"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21V9H3v12h5.25zm1.5-9l2-6a2 2 0 013.9.36l.96 3.86h4.46a2.5 2.5 0 012.36 3.3l-1.5 4.5A3.5 3.5 0 0118.75 21H9.75v-9z" />
-                </svg>
-              )}
-              <span className={`text-sm ${post.liked ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>
-                {formatCount(post.likesCount)}
-              </span>
-            </button>
-          </div>
+          <PostActions
+            liked={post.liked}
+            likesCount={post.likesCount}
+            repliesCount={post.repliesCount}
+            onReply={() => navigate(`/u/${post.user.username}/status/${post.id}`)}
+            onLikeToggle={() => onLike?.(post)}
+            onShare={() => {
+              try {
+                const url = window.location.origin + "/u/" + post.user.username + "/status/" + post.id;
+                if (navigator.share) {
+                  navigator.share({ url });
+                } else if (navigator.clipboard) {
+                  navigator.clipboard.writeText(url);
+                }
+              } catch {}
+            }}
+          />
         </div>
       </div>
     </div>
