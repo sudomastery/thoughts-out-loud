@@ -1,4 +1,4 @@
-from . import db
+from extensions import db
 
 post_hashtags = db.Table(
     'post_hashtags',
