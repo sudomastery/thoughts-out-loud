@@ -6,6 +6,7 @@ import FeedPage from './FeedPage.jsx';
 import ProfilePage from './ProfilePage.jsx';
 import HashtagPage from './HashtagPage.jsx';
 import PostDetailPage from './PostDetailPage.jsx';
+import PageNotFound from './404.jsx';
 import { useAuthStore } from '../store/authStore.js';
 
 // ProtectedRoute enforces auth by checking for a token.
@@ -27,6 +28,7 @@ export default function AppRouter() {
       {/* Public routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
+      <Route path="/" element={<SignUpPage />} />
 
       {/* Protected routes */}
       <Route
@@ -63,14 +65,7 @@ export default function AppRouter() {
       />
 
       {/* Fallback: if authenticated go feed, else login */}
-      <Route
-        path="*"
-        element={
-          <ProtectedRoute>
-            <Navigate to="/feed" replace />
-          </ProtectedRoute>
-        }
-      />
+     <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
 }

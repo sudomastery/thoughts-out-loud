@@ -10,7 +10,7 @@ const initialPosts = [
   {
     id: "1",
     user: { username: "test" },
-    body: "Making this post to test the lenght of this card and the recurseive nature of this card, how well does it appear how well does it read I mean does it even read  at all testing this to make user it works what elements are missing from the posts #welcome #thoughts",
+    body: "Lets assume this is a normal post from a user, it needs to be long to test how long text appears in the post card component. #hashtag-testing",
     createdAt: new Date().toISOString(),
     liked: false,
     likesCount: 2,

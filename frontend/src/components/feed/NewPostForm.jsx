@@ -57,7 +57,7 @@ export default function NewPostForm({ onSubmit, currentUser = { username: "you" 
 
                         {/* Reply scope hint */}
                         <div className="mt-2 text-sm text-blue-500 dark:text-blue-400 font-medium">
-                            Post this to the public
+                            Post this to the everyone
                         </div>
 
                         {/* Actions row (only counter + Post) */}
