@@ -1,6 +1,6 @@
 import { Card, Dropdown, DropdownItem } from "flowbite-react";
 
-export function ProfilePage() {
+export default function ProfilePage() {
   return (
     <Card className="max-w-sm bg-blue-50 border border-blue-200 shadow-lg">
       <div className="flex justify-end px-4 pt-4">
@@ -31,16 +31,22 @@ export function ProfilePage() {
           </DropdownItem>
         </Dropdown>
       </div>
+
       <div className="flex flex-col items-center pb-10">
         <img
-          alt="Bonnie image"
+          alt="Profile image"
           height="96"
-          src="https://i.pinimg.com/736x/12/e9/af/12e9aff1764df39b155fffd23af8fd7a.jpg"
           width="96"
+          src="https://i.pinimg.com/736x/12/e9/af/12e9aff1764df39b155fffd23af8fd7a.jpg"
           className="mb-3 rounded-full shadow-lg"
         />
-        <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">group 4</h5>
-        <span className="text-sm text-gray-500 dark:text-gray-400">Software Engineer</span>
+        <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
+          group 4
+        </h5>
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          Software Engineer
+        </span>
+
         <div className="mt-4 flex space-x-3 lg:mt-6">
           <a
             href="#"
