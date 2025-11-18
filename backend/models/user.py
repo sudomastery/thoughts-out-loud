@@ -1,7 +1,12 @@
 from extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from models.like import likes  # association table for likes
 
 class User(db.Model):
+    """User model (single authoritative definition).
+    Fields match existing migrations: id, username, email, password.
+    Added relationship 'liked_posts' for like feature.
+    """
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -9,54 +14,29 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
 
+    # One-to-many: user -> posts
     posts = db.relationship("Post", backref="user", lazy=True)
 
-    def set_password(self, password):
-        self.password = generate_password_hash(password)
+    # Many-to-many: posts liked by user
+    liked_posts = db.relationship(
+        "Post",
+        secondary=likes,
+        backref=db.backref("liked_by", lazy="dynamic"),
+        lazy="dynamic"
+    )
 
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
+    def set_password(self, raw_password: str):
+        self.password = generate_password_hash(raw_password)
+
+    def check_password(self, raw_password: str) -> bool:
+        return check_password_hash(self.password, raw_password)
 
     def to_dict(self):
         return {
             "id": self.id,
             "username": self.username,
-            "email": self.email
+            "email": self.email,
         }
-from datetime import datetime
-from . import db
-from .follow import followers
-from .like import likes
 
-class User(db.Model):
-    __tablename__ = 'users'
-
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    # Posts authored by the user
-    posts = db.relationship('Post', backref='author', lazy=True)
-
-    # Following / Followers relationships
-    following = db.relationship(
-        'User',
-        secondary=followers,
-        primaryjoin=(followers.c.follower_id == id),
-        secondaryjoin=(followers.c.followed_id == id),
-        backref=db.backref('followers', lazy='dynamic'),
-        lazy='dynamic'
-    )
-
-    # Liked posts
-    liked_posts = db.relationship(
-        'Post',
-        secondary=likes,
-        backref=db.backref('liked_by', lazy='dynamic'),
-        lazy='dynamic'
-    )
-
-    def __repr__(self):
+    def __repr__(self):  # debug convenience
         return f"<User {self.username}>"

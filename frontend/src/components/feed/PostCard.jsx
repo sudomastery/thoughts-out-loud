@@ -44,8 +44,12 @@ function BodyWithHashtags({ text }) {
 export default function PostCard({ post, onLike, onEdit, onDelete }) {
   const navigate = useNavigate();
   const currentUser = useAuthStore((s) => s.user);
-  const isOwner = currentUser?.username && currentUser.username === post.user.username;
+  const effectiveUsername = post.user?.username || post.username || `user-${post.user_id}`;
+  const isOwner = currentUser?.username && currentUser.username === effectiveUsername;
   const [menuOpen, setMenuOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(post.body);
+  const [saving, setSaving] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -74,21 +78,24 @@ export default function PostCard({ post, onLike, onEdit, onDelete }) {
       <div className="relative flex items-start gap-3">
         <div className="h-10 w-10 rounded-full bg-black dark:bg-white flex items-center justify-center">
           <span className="text-white dark:text-black font-bold">
-            {post.user.username.slice(0, 1).toUpperCase()}
+            {effectiveUsername.slice(0, 1).toUpperCase()}
           </span>
         </div>
         <div className="flex-1">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-2">
             <Link
-              to={`/u/${post.user.username}`}
+              to={`/u/${effectiveUsername}`}
               className="font-semibold text-gray-900 dark:text-gray-100 hover:underline"
             >
-              {post.user.username}
+              {effectiveUsername}
             </Link>
             <span className="text-xs text-gray-500 dark:text-gray-400">
               {formatTime(post.createdAt)}
             </span>
+            {post.edited && (
+              <span className="text-xs text-gray-500 dark:text-gray-400">(edited)</span>
+            )}
             </div>
             {isOwner && (
               <div className="relative" ref={menuRef}>
@@ -104,12 +111,29 @@ export default function PostCard({ post, onLike, onEdit, onDelete }) {
                 >
                   <span aria-hidden className="text-xl leading-none">⋮</span>
                 </button>
-                {menuOpen && (
+                {menuOpen && !editing && (
                   <div
                     role="menu"
                     className="absolute right-0 mt-2 z-50 min-w-28 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-xl p-1"
                     onClick={(e) => e.stopPropagation()}
                   >
+                    {isOwner && (
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className="w-full text-left px-3 py-2 rounded-md text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setMenuOpen(false);
+                          setEditing(true);
+                          setDraft(post.body);
+                        }}
+                      >
+                        Edit
+                      </button>
+                    )}
+                    {/* Edit option removed */}
                     <button
                       type="button"
                       role="menuitem"
@@ -129,17 +153,60 @@ export default function PostCard({ post, onLike, onEdit, onDelete }) {
             )}
           </div>
           <div className="mt-2">
-            <BodyWithHashtags text={post.body} />
+            {editing ? (
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  if (!draft.trim()) return;
+                  setSaving(true);
+                  try {
+                    await onEdit?.(post, draft.trim());
+                    setEditing(false);
+                  } catch (err) {
+                    // could surface error
+                  } finally {
+                    setSaving(false);
+                  }
+                }}
+                className="space-y-2"
+              >
+                <textarea
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  rows={3}
+                  className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 p-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  autoFocus
+                />
+                <div className="flex items-center gap-2">
+                  <button
+                    type="submit"
+                    disabled={saving || !draft.trim()}
+                    className="inline-flex items-center rounded-md bg-blue-600 hover:bg-blue-700 disabled:opacity-50 px-3 py-1.5 text-xs font-semibold text-white"
+                  >
+                    {saving ? 'Saving…' : 'Save'}
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex items-center rounded-md bg-gray-700 hover:bg-gray-600 px-3 py-1.5 text-xs font-semibold text-white"
+                    onClick={() => { setEditing(false); setDraft(post.body); }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <BodyWithHashtags text={post.body} />
+            )}
           </div>
           <PostActions
             liked={post.liked}
             likesCount={post.likesCount}
             repliesCount={post.repliesCount}
-            onReply={() => navigate(`/u/${post.user.username}/status/${post.id}`)}
+            onReply={() => navigate(`/u/${effectiveUsername}/status/${post.id}`)}
             onLikeToggle={() => onLike?.(post)}
             onShare={() => {
               try {
-                const url = window.location.origin + "/u/" + post.user.username + "/status/" + post.id;
+                const url = window.location.origin + "/u/" + effectiveUsername + "/status/" + post.id;
                 if (navigator.share) {
                   navigator.share({ url });
                 } else if (navigator.clipboard) {
