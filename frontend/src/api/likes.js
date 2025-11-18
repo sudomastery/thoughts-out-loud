@@ -1,35 +1,19 @@
-const API_BASE_URL = 'http://localhost:5000';
+// frontend/src/api/likes.js
+// PURPOSE: Hit like/unlike endpoints.
+// BEGINNER: These two functions talk to the server to add or remove your like.
 
-export async function likePost(postId, userId) {
-  const response = await fetch(`${API_BASE_URL}/posts/${postId}/like`, {
+import { apiRequest } from './client';
+
+export function likePost({ postId, token }) {
+  return apiRequest(`/posts/${postId}/like`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ user_id: userId }),
+    token,
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to like post');
-  }
-
-  return response.json();
 }
 
-export async function unlikePost(postId, userId) {
-  const response = await fetch(`${API_BASE_URL}/posts/${postId}/unlike`, {
+export function unlikePost({ postId, token }) {
+  return apiRequest(`/posts/${postId}/like`, {
     method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ user_id: userId }),
+    token,
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to unlike post');
-  }
-
-  return response.json();
 }

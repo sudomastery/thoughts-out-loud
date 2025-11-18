@@ -1,31 +1,22 @@
-const API_BASE_URL = 'http://localhost:5000';
+// frontend/src/api/users.js
+// PURPOSE: User related API calls (search, fetch one)
+// BEGINNER: These functions ask the server for users.
 
-export async function searchUsers(query) {
-  const response = await fetch(`${API_BASE_URL}/users?search=${encodeURIComponent(query)}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+import { apiRequest } from './client';
 
-  if (!response.ok) {
-    throw new Error('Failed to search users');
-  }
-
-  return response.json();
+export function searchUsers(query) {
+  const q = encodeURIComponent(query);
+  return apiRequest(`/users?q=${q}`);
 }
 
-export async function getUser(userId) {
-  const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+export function getUser(id) {
+  return apiRequest(`/users/${id}`);
+}
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch user');
-  }
+export function getUserByUsername(username) {
+  return apiRequest(`/users/username/${encodeURIComponent(username)}`);
+}
 
-  return response.json();
+export function getUserPostsByUsername(username) {
+  return apiRequest(`/users/username/${encodeURIComponent(username)}/posts`);
 }

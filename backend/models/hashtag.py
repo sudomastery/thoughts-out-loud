@@ -11,3 +11,9 @@ class Hashtag(db.Model):
     def __repr__(self):
         return f"<Hashtag {self.name}>"
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "created_at": self.created_at.isoformat() if self.created_at else None
+        }

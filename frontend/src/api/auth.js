@@ -1,35 +1,21 @@
-const API_BASE_URL = 'http://localhost:5000';
+// frontend/src/api/auth.js
+// PURPOSE: Functions for signup and login so pages can call them easily.
+// Each returns the server response (user + token).
+// BEGINNER: Think of these as buttons wired to the backend. Instead of writing
+// fetch code in the component, we keep it here to stay organized.
 
-export async function login(email, password) {
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+import { apiRequest } from './client';
+
+export function signup({ username, email, password }) {
+  return apiRequest('/auth/signup', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, password }),
+    body: { username, email, password },
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Login failed');
-  }
-
-  return response.json();
 }
 
-export async function signup(username, email, password) {
-  const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+export function login({ email, password }) {
+  return apiRequest('/auth/login', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ username, email, password }),
+    body: { email, password },
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Signup failed');
-  }
-
-  return response.json();
 }

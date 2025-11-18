@@ -1,16 +1,9 @@
-const API_BASE_URL = 'http://localhost:5000';
+// frontend/src/api/hashtags.js
+// PURPOSE: Get posts for a hashtag from backend.
+// BEGINNER: If user clicks #world we ask server for all posts that have that tag.
 
-export async function getHashtagPosts(hashtag) {
-  const response = await fetch(`${API_BASE_URL}/hashtags/${hashtag}/posts`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+import { apiRequest } from './client';
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch hashtag posts');
-  }
-
-  return response.json();
+export function getHashtagPosts(name) {
+  return apiRequest(`/hashtags/${encodeURIComponent(name)}`);
 }
