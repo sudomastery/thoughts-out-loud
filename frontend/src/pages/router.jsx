@@ -6,6 +6,7 @@ import FeedPage from './FeedPage.jsx';
 import ProfilePage from './ProfilePage.jsx';
 import HashtagPage from './HashtagPage.jsx';
 import PostDetailPage from './PostDetailPage.jsx';
+import SearchResultsPage from './searchResultsPage.jsx';
 import PageNotFound from './404.jsx';
 import { useAuthStore } from '../store/authStore.js';
 
@@ -60,6 +61,14 @@ export default function AppRouter() {
         element={
           <ProtectedRoute>
             <HashtagPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/search"
+        element={
+          <ProtectedRoute>
+            <SearchResultsPage />
           </ProtectedRoute>
         }
       />
