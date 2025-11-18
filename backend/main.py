@@ -5,6 +5,15 @@ from flask_migrate import Migrate
 from extensions import db, migrate
 from config import Config
 
+# Import models so Alembic sees them
+from models.user import User
+from models.post import Post
+from models.hashtag import Hashtag
+from models.follow import followers
+from models.like import likes
+from models.post_hashtag import post_hashtags
+
+
 # Import Blueprints
 from routes.posts import posts_bp
 from routes.auth import auth_bp
