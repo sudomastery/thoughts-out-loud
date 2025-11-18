@@ -6,7 +6,7 @@ import FeedPage from './FeedPage.jsx';
 import ProfilePage from './ProfilePage.jsx';
 import HashtagPage from './HashtagPage.jsx';
 import PostDetailPage from './PostDetailPage.jsx';
-import SearchResultsPage from './SearchResultsPage.jsx';
+import SearchResultsPage from './searchResultsPage.jsx';
 import PageNotFound from './404.jsx';
 import { useAuthStore } from '../store/authStore.js';
 
