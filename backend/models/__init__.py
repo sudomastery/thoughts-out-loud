@@ -1,9 +1,9 @@
 # models/__init__.py
-from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
+# Import the single db instance from extensions
+from extensions import db
 
-# Import models AFTER db is created to avoid circular imports
+# Import models AFTER db is imported to avoid circular imports
 from .user import User
 from .post import Post
 from .hashtag import Hashtag
