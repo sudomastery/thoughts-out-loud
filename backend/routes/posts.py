@@ -8,7 +8,7 @@ from models.post import Post
 # Create a Blueprint for posts routes (like a mini-app for just posts)
 posts_bp = Blueprint("posts", __name__, url_prefix="/posts")
 
-# ---------------- CREATE a new post ----------------
+# CREATE a new post 
 @posts_bp.route("", methods=["POST"])
 def create_post():
     """
@@ -35,7 +35,7 @@ def create_post():
     }), 201
 
 
-# ---------------- READ all posts ----------------
+#  READ all posts
 @posts_bp.route("", methods=["GET"])
 def get_all_posts():
     """
@@ -45,7 +45,7 @@ def get_all_posts():
     return jsonify([p.to_dict() for p in posts]), 200
 
 
-# ---------------- READ one post by ID ----------------
+#  READ one post by ID 
 @posts_bp.route("/<int:post_id>", methods=["GET"])
 def get_post(post_id):
     """
@@ -56,7 +56,7 @@ def get_post(post_id):
     return jsonify(post.to_dict()), 200
 
 
-# ---------------- UPDATE a post ----------------
+#  UPDATE a post 
 @posts_bp.route("/<int:post_id>", methods=["PATCH"])
 def update_post(post_id):
     """
@@ -78,7 +78,7 @@ def update_post(post_id):
     }), 200
 
 
-# ---------------- DELETE a post ----------------
+#  DELETE a post 
 @posts_bp.route("/<int:post_id>", methods=["DELETE"])
 def delete_post(post_id):
     """

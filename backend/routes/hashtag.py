@@ -7,7 +7,7 @@ from models.post import Post
 
 hashtags_bp = Blueprint("hashtags", __name__, url_prefix="/hashtags")
 
-# ----------------------- CREATE HASHTAG -----------------------
+# CREATE HASHTAG
 @hashtags_bp.route("/", methods=["POST"])
 def create_hashtag():
     data = request.get_json() or {}
@@ -31,14 +31,14 @@ def create_hashtag():
     return jsonify({"message": "Hashtag created", "hashtag": hashtag.to_dict()}), 201
 
 
-# ----------------------- GET ALL HASHTAGS -----------------------
+# GET ALL HASHTAGS 
 @hashtags_bp.route("/", methods=["GET"])
 def get_hashtags():
     hashtags = Hashtag.query.all()
     return jsonify([h.to_dict() for h in hashtags]), 200
 
 
-# ----------------------- GET POSTS BY HASHTAG -----------------------
+# GET POSTS BY HASHTAG
 @hashtags_bp.route("/<string:name>/posts", methods=["GET"])
 def get_posts_by_hashtag(name):
     hashtag = Hashtag.query.filter_by(name=name.lower()).first()
@@ -50,7 +50,7 @@ def get_posts_by_hashtag(name):
     return jsonify([p.to_dict() for p in posts]), 200
 
 
-# ----------------------- DELETE HASHTAG -----------------------
+#  DELETE HASHTAG 
 @hashtags_bp.route("/<int:id>", methods=["DELETE"])
 def delete_hashtag(id):
     hashtag = Hashtag.query.get(id)
