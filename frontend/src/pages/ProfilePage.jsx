@@ -1,61 +1,96 @@
-import { Card, Dropdown, DropdownItem } from "flowbite-react";
+import { updatePost } from '../api/posts.js';
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import ProfileHeader from '../components/user/ProfileHeader.jsx';
+import PostCard from '../components/feed/PostCard.jsx';
+import { getUserByUsername, getUserPostsByUsername } from '../api/users.js';
+import { likePost, unlikePost } from '../api/likes.js';
+import { useAuthStore } from '../store/authStore.js';
 
-export function ProfilePage() {
+function mapApiPost(p, currentUserId) {
+  return {
+    id: String(p.id),
+    user: { username: p.username || `user-${p.user_id}` },
+    user_id: p.user_id,
+    username: p.username,
+    body: p.content,
+    createdAt: p.created_at,
+    liked: !!p.liked,
+    likesCount: p.likes_count || 0,
+    repliesCount: p.replies_count || 0,
+    isOwner: currentUserId === p.user_id,
+  edited: !!p.edited,
+  };
+}
+
+export default function ProfilePage() {
+  const { username } = useParams();
+  const auth = useAuthStore();
+  const currentUserId = auth.user?.id;
+  const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      try {
+        const u = await getUserByUsername(username);
+        setUser(u);
+        const data = await getUserPostsByUsername(username);
+        setPosts(data.map(p => mapApiPost(p, currentUserId)));
+      } catch (e) {
+        setError(e.message || 'Failed to load profile');
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, [username, currentUserId]);
+
+  const handleLike = async (post) => {
+    if (!auth.token) return;
+    const wasLiked = post.liked;
+    setPosts(p => p.map(it => it.id === post.id ? { ...it, liked: !wasLiked, likesCount: it.likesCount + (wasLiked ? -1 : 1) } : it));
+    try {
+      const resp = wasLiked
+        ? await unlikePost({ postId: post.id, token: auth.token })
+        : await likePost({ postId: post.id, token: auth.token });
+      if (resp.likes_count !== undefined) {
+        setPosts(p => p.map(it => it.id === post.id ? { ...it, likesCount: resp.likes_count } : it));
+      }
+    } catch (e) {
+      setPosts(p => p.map(it => it.id === post.id ? { ...it, liked: wasLiked } : it));
+      setError(e.message || 'Failed to toggle like');
+    }
+  };
+
+  const handleEdit = async (post, newContent) => {
+    try {
+      const resp = await updatePost(post.id, { content: newContent, token: auth.token });
+      const apiPost = resp.post;
+      setPosts(p => p.map(it => it.id === post.id ? { ...it, body: apiPost.content, edited: !!apiPost.edited } : it));
+    } catch (e) {
+      setError(e.message || 'Edit failed');
+      throw e;
+    }
+  };
+
+
   return (
-    <Card className="max-w-sm bg-blue-50 border border-blue-200 shadow-lg">
-      <div className="flex justify-end px-4 pt-4">
-        <Dropdown inline label="">
-          <DropdownItem>
-            <a
-              href="#"
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
-            >
-              Edit
-            </a>
-          </DropdownItem>
-          <DropdownItem>
-            <a
-              href="#"
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
-            >
-              Export Data
-            </a>
-          </DropdownItem>
-          <DropdownItem>
-            <a
-              href="#"
-              className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
-            >
-              Delete
-            </a>
-          </DropdownItem>
-        </Dropdown>
+    <div className="min-h-screen w-full px-4 py-6">
+      <div className="mx-auto w-full max-w-2xl space-y-6">
+        {error && <p className="text-sm text-red-600" role="alert">{error}</p>}
+        <ProfileHeader user={user} />
+        {loading && <p className="text-sm text-gray-500">Loading posts...</p>}
+        {!loading && posts.length === 0 && !error && (
+          <p className="text-sm text-gray-500">No posts yet.</p>
+        )}
+        {posts.map(post => (
+          <PostCard key={post.id} post={post} onLike={handleLike} onEdit={handleEdit} />
+        ))}
       </div>
-      <div className="flex flex-col items-center pb-10">
-        <img
-          alt="Bonnie image"
-          height="96"
-          src="https://i.pinimg.com/736x/12/e9/af/12e9aff1764df39b155fffd23af8fd7a.jpg"
-          width="96"
-          className="mb-3 rounded-full shadow-lg"
-        />
-        <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">group 4</h5>
-        <span className="text-sm text-gray-500 dark:text-gray-400">Software Engineer</span>
-        <div className="mt-4 flex space-x-3 lg:mt-6">
-          <a
-            href="#"
-            className="inline-flex items-center rounded-lg bg-cyan-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-cyan-800 focus:outline-none focus:ring-4 focus:ring-cyan-300 dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800"
-          >
-            Add friend
-          </a>
-          <a
-            href="#"
-            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-center text-sm font-medium text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:hover:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
-          >
-            Message
-          </a>
-        </div>
-      </div>
-    </Card>
+    </div>
   );
 }
