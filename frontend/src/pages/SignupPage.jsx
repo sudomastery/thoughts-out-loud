@@ -21,7 +21,7 @@ function SignUpPage() {
     e.preventDefault();
     setError(null);
 
-    // DONT NEED TERMS AND CONDITIONS AT THIS TIME
+    // DONT NEED TERMS AND CONDITIONS AT THIS TIME, may add later
     // if (!agree) {
     //   setError('Please agree to the terms first');
     //   return;

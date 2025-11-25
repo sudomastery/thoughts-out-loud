@@ -1,4 +1,3 @@
-// frontend/src/pages/SearchResultsPage.jsx
 // PURPOSE: Show full list of users for a given search query (?q=).
 // BEGINNER: This page reads the search term from the URL and asks the server for matching users.
 
