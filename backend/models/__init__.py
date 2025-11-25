@@ -1,12 +1,14 @@
-from flask_sqlalchemy import SQLAlchemy
+# models/__init__.py
 
-# Single db instance for the whole app
-db = SQLAlchemy()
+# Import the single db instance from extensions
+from extensions import db
 
-# Import all models so they are registered with SQLAlchemy
+# Import models AFTER db is imported to avoid circular imports
 from .user import User
 from .post import Post
 from .hashtag import Hashtag
+
+# Import association tables
 from .follow import followers
 from .like import likes
 from .post_hashtag import post_hashtags
