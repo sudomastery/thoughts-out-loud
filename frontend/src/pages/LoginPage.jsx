@@ -1,16 +1,33 @@
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 import { useAuthStore } from '../store/authStore.js';
 import { useNavigate, Link } from 'react-router-dom';
+import { useState } from 'react';
+import { login as loginRequest } from '../api/auth.js'; // backend auth API
 
 function LoginPage() {
- //create a fake token
   const navigate = useNavigate();
-  const login = useAuthStore(s => s.login);
+  const authLogin = useAuthStore(s => s.login);
 
-  function handleSubmit(e) {
+  // Local form state
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    login({ token: "dev-token", user: { id: 1, username: "you" } });
-    navigate("/feed", { replace: true });
+    setError(null);
+    setLoading(true);
+    try {
+      const resp = await loginRequest({ email, password });
+      // resp contains { message, token, user }
+      authLogin({ token: resp.token, user: resp.user });
+      navigate("/feed", { replace: true });
+    } catch (err) {
+      setError(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   }
 
 
@@ -51,6 +68,8 @@ function LoginPage() {
               <TextInput
                 id="email1"
                 type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
                 required
                 sizing="lg"
                 shadow
@@ -72,6 +91,8 @@ function LoginPage() {
               <TextInput
                 id="password1"
                 type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
                 required
                 sizing="lg"
                 shadow
@@ -80,20 +101,25 @@ function LoginPage() {
                            focus:ring-blue-500/30 focus:border-blue-400/50 transition-colors"
               />
             </div>
-
-            <div className="flex items-center gap-2">
+            
+            {/* DONT REALLY NEED THIS AT THIS POINT IN TIME */}
+            {/* <div className="flex items-center gap-2">
               <Checkbox id="remember" />
               <Label htmlFor="remember" className="text-gray-700 dark:text-gray-200">
                 Remember me
               </Label>
-            </div>
+            </div> */}
 
+            {error && (
+              <p className="text-sm text-red-600 dark:text-red-400" role="alert">{error}</p>
+            )}
             <Button
               type="submit"
               size="lg"
-              className="w-full !bg-blue-600 !hover:bg-blue-700 !text-white !border-0 focus:!ring-4 !ring-blue-500/30"
+              disabled={loading}
+              className="w-full !bg-blue-600 !hover:bg-blue-700 !text-white !border-0 focus:!ring-4 !ring-blue-500/30 disabled:opacity-60"
             >
-              Sign in
+              {loading ? 'Signing in...' : 'Sign in'}
             </Button>
           </form>
         </div>
