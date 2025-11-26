@@ -12,7 +12,11 @@ class Config:
     # Note: update credentials here if you change them in Postgres.
     SQLALCHEMY_DATABASE_URI = os.getenv(
         "DATABASE_URL",
+<<<<<<< HEAD
         "postgresql://thoughts_user:9090@localhost:5432/thoughts_db"
+=======
+        "postgresql://postgres:Maina@localhost:5432/thoughts_db" 
+>>>>>>> seth-backend
     )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False

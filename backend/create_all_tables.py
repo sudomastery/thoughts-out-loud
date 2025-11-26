@@ -4,7 +4,7 @@ from extensions import db
 
 def setup_database():
     with app.app_context():
-        print("🚀 Setting up database with SQLAlchemy...")
+        print(" Setting up database with SQLAlchemy...")
         
         # Drop all tables
         db.drop_all()
