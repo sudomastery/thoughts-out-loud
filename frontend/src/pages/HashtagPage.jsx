@@ -6,11 +6,11 @@ import PostCard from '../components/feed/PostCard.jsx';
 function mapApiPost(p) {
   return {
     id: String(p.id),
-    user: { username: `user-${p.user_id}` },
+    user: { username: p.username || `user-${p.user_id}` },
     body: p.content,
     createdAt: p.created_at,
     liked: false,
-    likesCount: 0,
+    likesCount: p.likes_count || 0,
   };
 }
 

@@ -64,17 +64,15 @@ export default function PostCard({ post, onLike, onEdit, onDelete }) {
     return () => document.removeEventListener('mousedown', onDocClick, true);
   }, [menuOpen]);
   return (
-  <div className="relative overflow-visible rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl p-5">
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none rounded-2xl"
-        style={{
-          background:
-            "radial-gradient(420px circle at 50% 30%, rgba(255,255,255,0.10), rgba(255,255,255,0.04) 18%, transparent 40%)",
-          opacity: 1,
-          mixBlendMode: "overlay",
-        }}
-      />
+    <div
+      className="relative overflow-visible rounded-2xl border border-gray-700 bg-gradient-to-br from-gray-900/80 via-gray-800/70 to-gray-900/60 shadow-xl p-5 backdrop-blur-md transition-all duration-200 hover:shadow-[0_8px_32px_0_rgba(56,189,248,0.25)] hover:border-blue-400 hover:bg-gray-900/90 hover:scale-[1.03]"
+      style={{
+        boxShadow: '0 4px 32px 0 rgba(0,0,0,0.18)',
+        border: '1px solid rgba(56,189,248,0.08)',
+        background: 'linear-gradient(135deg, rgba(30,41,59,0.85) 0%, rgba(30,41,59,0.65) 100%)',
+        backdropFilter: 'blur(8px)',
+      }}
+    >
       <div className="relative flex items-start gap-3">
         <div className="h-10 w-10 rounded-full bg-black dark:bg-white flex items-center justify-center">
           <span className="text-white dark:text-black font-bold">

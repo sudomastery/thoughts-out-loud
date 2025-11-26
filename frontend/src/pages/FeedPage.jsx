@@ -111,18 +111,44 @@ export default function FeedPage() {
   };
 
 
+  // Get top 5 most liked posts
+  const mostLiked = [...posts]
+    .sort((a, b) => (b.likesCount || 0) - (a.likesCount || 0))
+    .slice(0, 5);
+
   return (
-    <div className="min-h-screen w-full px-4 py-6">
-      <div className="mx-auto w-full max-w-2xl space-y-4">
-        <NewPostForm onSubmit={handleCreate} />
-        {loading && <p className="text-sm text-gray-500">Loading posts...</p>}
-        {error && <p className="text-sm text-red-600" role="alert">{error}</p>}
-        {!loading && posts.length === 0 && !error && (
-          <p className="text-sm text-gray-500">No posts yet. Be the first!</p>
-        )}
-        {posts.map((post) => (
-          <PostCard key={post.id} post={post} onLike={handleLike} onDelete={handleDelete} onEdit={handleEdit} />
-        ))}
+    <div className="min-h-screen w-full flex flex-row px-0 py-6">
+      {/* NavBar is 20vw (fixed), posts 40vw, most liked 20vw, 20vw padding */}
+      <div className="flex flex-row w-full justify-between">
+        <div style={{ width: '20vw' }} />
+        <div style={{ width: '40vw', maxWidth: 700 }} className="space-y-8">
+          <NewPostForm onSubmit={handleCreate} />
+          {loading && <p className="text-sm text-gray-500">Loading posts...</p>}
+          {error && <p className="text-sm text-red-600" role="alert">{error}</p>}
+          {!loading && posts.length === 0 && !error && (
+            <p className="text-sm text-gray-500">No posts yet. Be the first!</p>
+          )}
+          {posts.map((post) => (
+            <PostCard key={post.id} post={post} onLike={handleLike} onDelete={handleDelete} onEdit={handleEdit} />
+          ))}
+        </div>
+        {/* Right sidebar for most liked posts */}
+        <aside className="w-[20vw] max-w-[320px] ml-8 bg-gray-900/80 rounded-2xl p-6 h-fit mt-2 shadow-lg text-white">
+          <h2 className="text-lg font-bold mb-4 text-blue-400">Most Liked Posts</h2>
+          {mostLiked.length === 0 ? (
+            <p className="text-sm text-gray-400">No liked posts yet.</p>
+          ) : (
+            <ul className="space-y-4">
+              {mostLiked.map(post => (
+                <li key={post.id} className="border-b border-gray-700 pb-2">
+                  <div className="font-semibold text-white">{post.user?.username}</div>
+                  <div className="text-sm text-gray-300 truncate">{post.body}</div>
+                  <div className="text-xs text-blue-400 mt-1">{post.likesCount} likes</div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </aside>
       </div>
     </div>
   );

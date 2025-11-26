@@ -2,45 +2,84 @@
 // PURPOSE: Top navigation bar with brand, search, and account shortcut.
 // BEGINNER: This bar appears on every page (when logged in) giving quick access.
 
-import { Link, useLocation } from 'react-router-dom';
-import SearchBar from './SearchBar.jsx';
+
+
+import { Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore.js';
+import { Button } from 'flowbite-react';
+
+const navItems = [
+	{
+		name: 'Home',
+		to: '/feed',
+		icon: (
+			<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-2xl"><path d="M3 9.5L12 4l9 5.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/></svg>
+		),
+	},
+	{
+		name: 'Profile',
+		to: '/profile',
+		icon: (
+			<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-2xl"><circle cx="12" cy="8" r="4"/><path d="M2 20c0-4 4-7 10-7s10 3 10 7"/></svg>
+		),
+	},
+];
 
 export default function NavBar() {
 	const user = useAuthStore(s => s.user);
-	const logout = useAuthStore(s => s.logout);
-	const location = useLocation();
-	const showSearch = location.pathname.startsWith('/feed') || location.pathname.startsWith('/hashtag') || location.pathname.startsWith('/search');
+	const navItems = [
+		{
+			name: 'Home',
+			to: '/feed',
+			icon: (
+				<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-2xl"><path d="M3 9.5L12 4l9 5.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/></svg>
+			),
+		},
+		{
+			name: 'Profile',
+			to: user ? `/u/${user.username}` : '/profile',
+			icon: (
+				<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-2xl"><circle cx="12" cy="8" r="4"/><path d="M2 20c0-4 4-7 10-7s10 3 10 7"/></svg>
+			),
+		},
+	];
 	return (
-		<header className="w-full border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 sticky top-0 z-40">
-			<div className="mx-auto max-w-5xl px-4 py-3 flex items-center gap-4">
-				<Link to="/feed" className="inline-flex items-center gap-2 font-bold text-lg text-gray-900 dark:text-gray-100">
-					<div className="h-8 w-8 rounded-full bg-black dark:bg-white flex items-center justify-center">
-						<span className="text-white dark:text-black text-sm font-bold">T</span>
+		<nav className="fixed left-0 top-0 h-screen w-[20vw] min-w-[180px] max-w-[300px] bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white flex flex-col items-center py-12 px-2 border-r border-gray-800 z-50 shadow-xl">
+			<div className="mb-10 flex flex-col items-center w-full">
+				<div className="flex flex-col items-center w-full">
+					<div className="h-12 w-12 rounded-full bg-white flex items-center justify-center shadow mb-2">
+						<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9.5L12 4l9 5.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M9 22V12h6v10"/></svg>
 					</div>
-					Thoughts
-				</Link>
-				<div className="flex-1">
-					{showSearch && <SearchBar />}
+					<span className="font-bold text-3xl tracking-tight text-white">Thoughts</span>
 				</div>
-				{user && (
-					<div className="flex items-center gap-2">
+				<div className="flex flex-col gap-4 w-full items-center mt-8">
+					{navItems.map((item, idx) => (
 						<Link
-							to={`/u/${user.username}`}
-							className="text-sm font-semibold text-gray-900 dark:text-gray-100 hover:underline"
+							key={item.name}
+							to={item.to}
+							className={`flex items-center gap-4 px-8 py-4 rounded-full hover:bg-gray-700 transition text-xl font-semibold w-4/5 justify-start ${idx === 0 ? 'mt-2' : ''}`}
+							style={{ color: 'white' }}
 						>
-							{user.username}
+							{item.icon}
+							{item.name}
 						</Link>
-						<button
-							type="button"
-							onClick={logout}
-							className="inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold bg-gray-800 dark:bg-gray-700 text-white hover:bg-gray-700 dark:hover:bg-gray-600 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/30"
-						>
-							Sign out
-						</button>
-					</div>
-				)}
+					))}
+				</div>
 			</div>
-		</header>
+			{user && (
+				<div className="mt-auto mb-8 flex flex-col items-center w-full">
+					<div className="text-sm text-blue-400 mb-1">Logged in as</div>
+					<div className="font-semibold text-xl mb-3 text-white">{user.username}</div>
+					<Button
+						color="blue"
+						size="lg"
+						className="w-40"
+						onClick={useAuthStore.getState().logout}
+					>
+						Sign out
+					</Button>
+				</div>
+			)}
+		</nav>
 	);
 }
