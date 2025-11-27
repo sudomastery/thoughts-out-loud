@@ -3,6 +3,7 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from extensions import db
+from flask_jwt_extended import create_access_token
 from models.user import User
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -34,8 +35,12 @@ def signup():
     db.session.add(user)
     db.session.commit()
 
+    # Generate JWT access token with user.id as identity
+    # Identity must be a string (RFC7519 subject claim); store user id as str
+    access_token = create_access_token(identity=str(user.id))
     return jsonify({
         "message": "User created successfully",
+    "token": access_token,
         "user": {
             "id": user.id,
             "username": user.username,
@@ -64,8 +69,10 @@ def login():
     if not check_password_hash(user.password, password):
         return jsonify({"error": "Invalid email or password"}), 401
 
+    access_token = create_access_token(identity=str(user.id))
     return jsonify({
         "message": "Login successful",
+    "token": access_token,
         "user": {
             "id": user.id,
             "username": user.username,

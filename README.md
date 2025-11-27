@@ -159,7 +159,7 @@ frontend/
       users.js
       posts.js
       hashtags.js
-    components/        # Reusable UI units
+  components/        # Reusable UI units
       layout/
         NavBar.jsx
         Sidebar.jsx
@@ -168,9 +168,6 @@ frontend/
         NewPostForm.jsx
       user/
         ProfileHeader.jsx
-      common/
-        Button.jsx
-        Spinner.jsx
     pages/             # Route-level components
       FeedPage.jsx
       LoginPage.jsx
@@ -198,7 +195,7 @@ Each `api/*.js` exports functions returning promises; wrap fetch errors into a u
 Adopt TailwindCSS + Flowbite React for speed. Keep component classNames readable; extract conditional variants into small helper functions if needed.
 
 ### 4.4 Error & Loading UX
-Global error boundary for unexpected errors. Each page shows skeleton or spinner while loading. Toast system for transient success/error messages.
+Global error boundary for unexpected errors. For MVP, use Flowbite components directly (no `components/common` wrappers). Each page can show simple inline loaders or skeletons as needed. Toast system for transient success/error messages (optional for MVP).
 
 ## 5. Naming & Conventions
 - Python: snake_case functions, PascalCase models, ALL_CAPS constants.

@@ -1,5 +1,5 @@
 from datetime import datetime
-from . import db
+from extensions import db
 
 class Hashtag(db.Model):
     __tablename__ = 'hashtags'
